@@ -23,6 +23,9 @@ public class Worker extends AbstractBehavior<Worker.Request> {
     public interface Request {
     }
 
+    /**
+     *
+     */
     public static final class TaskAssigned implements Request {
         private int calculatedNumber;
         private int pos;
@@ -44,7 +47,12 @@ public class Worker extends AbstractBehavior<Worker.Request> {
                 .build();
     }
 
-    // after the calculation the worker sends it back to task
+    /**
+     * After the calculation the worker sends it back to task.
+     *
+     * @param response
+     * @return
+     */
     private Behavior<Worker.Request> onTaskAssigned(TaskAssigned response) {
         scheduler.tell(new Scheduler.WorkerDone(this.getContext().getSelf(), response.sender));
         response.sender.tell(new Task.WorkerSend(

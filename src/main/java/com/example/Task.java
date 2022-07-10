@@ -39,6 +39,9 @@ public class Task extends AbstractBehavior<Task.Response> {
     public interface Response {
     }
 
+    /**
+     *
+     */
     public static final class WorkersAssigned implements Response {
         ActorRef<Scheduler.Request> sender;
         ArrayList<ActorRef<Worker.Request>> assignedWorkers;
@@ -52,6 +55,9 @@ public class Task extends AbstractBehavior<Task.Response> {
         }
     }
 
+    /**
+     * When worker has done its job, it sends a new calculated number to corresponding task.
+     */
     public static final class WorkerSend implements Response {
         ActorRef<Worker.Request> sender;
         int calculatedNumber;
@@ -72,6 +78,12 @@ public class Task extends AbstractBehavior<Task.Response> {
                 .build();
     }
 
+    /**
+     *
+     *
+     * @param response
+     * @return
+     */
     private Behavior<Response> onWorkersAssigned(WorkersAssigned response) {
         getContext().getLog().info("{} workers were assigned to {}",
                 response.assignedWorkers.size(), this.getContext().getSelf());
@@ -84,6 +96,12 @@ public class Task extends AbstractBehavior<Task.Response> {
         return this;
     }
 
+    /**
+     *
+     *
+     * @param response
+     * @return
+     */
     private Behavior<Response> onWorkerSend(WorkerSend response) {
         // replace the number at pos with new calculated number
         // given from the worker

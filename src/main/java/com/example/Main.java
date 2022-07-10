@@ -13,8 +13,14 @@ public class Main extends AbstractBehavior<Main.StartMessage> {
     public static class StartMessage {
     }
 
+    /**
+     * Scheduler actor reference
+     */
     ActorRef<Scheduler.Request> scheduler;
 
+    /**
+     * Tasks actor references (10)
+     */
     ActorRef<Task.Response> task1;
     ActorRef<Task.Response> task2;
     ActorRef<Task.Response> task3;
@@ -39,6 +45,9 @@ public class Main extends AbstractBehavior<Main.StartMessage> {
         return newReceiveBuilder().onMessage(StartMessage.class, this::onStartMessage).build();
     }
 
+    /**
+     * Spawns the scheduler and 10 tasks when start message is sent.
+     * */
     private Behavior<StartMessage> onStartMessage(StartMessage command) throws InterruptedException {
         scheduler = getContext().spawn(Scheduler.create(), "Scheduler");
         task1 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task1");
