@@ -57,8 +57,8 @@ public class Main extends AbstractBehavior<Main.StartMessage> {
 
     /**
      * Spawns the scheduler and 10 tasks when start message is sent.
-     * */
-    private Behavior<StartMessage> onStartMessage(StartMessage command) throws InterruptedException {
+     */
+    private Behavior<StartMessage> onStartMessage(StartMessage command) {
         scheduler = getContext().spawn(Scheduler.create(), "Scheduler");
         task1 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task1");
         task2 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task2");

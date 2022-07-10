@@ -44,7 +44,7 @@ public class Task extends AbstractBehavior<Task.Response> {
     }
 
     /**
-     *
+     * This message is sent when the task is assigned with new workers.
      */
     public static final class WorkersAssigned implements Response {
         ActorRef<Scheduler.Request> sender;
@@ -83,10 +83,10 @@ public class Task extends AbstractBehavior<Task.Response> {
     }
 
     /**
+     * After receiving new workers from scheduler, the task
+     * then assigns each worker to a position in the task list.
      *
-     *
-     * @param response
-     * @return
+     * @param response is the notification from scheduler.
      */
     private Behavior<Response> onWorkersAssigned(WorkersAssigned response) {
         getContext().getLog().info("{} workers were assigned to {}",
@@ -101,10 +101,11 @@ public class Task extends AbstractBehavior<Task.Response> {
     }
 
     /**
+     * When a task receives the result from a worker, it then replaces the old number
+     * at the given position with the new calculated number.
+     * If the task is done, sends a new message to the scheduler to inform that.
      *
-     *
-     * @param response
-     * @return
+     * @param response is the message with the new calculated number from a worker to a task.
      */
     private Behavior<Response> onWorkerSend(WorkerSend response) {
         // replace the number at pos with new calculated number

@@ -14,16 +14,15 @@ import akka.actor.typed.javadsl.Receive;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Random;
 
 public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     private int emptySlots = 10;
-    private Queue<ActorRef<Task.Response>> tasksQueue = new LinkedList<>();
-    private Queue<Integer> workerQueue = new LinkedList<>();
+    private final Queue<ActorRef<Task.Response>> tasksQueue = new LinkedList<>();
+    private final Queue<Integer> workerQueue = new LinkedList<>();
     private int workersCount = 1;
 
     public static Behavior<Scheduler.Request> create() {
-        return Behaviors.setup(context -> new Scheduler(context));
+        return Behaviors.setup(Scheduler::new);
     }
 
     public Scheduler(ActorContext<Request> context) {
@@ -34,7 +33,7 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * Is triggered when the task asks for workers.
+     * This message is sent when a task asks for workers.
      */
     public static final class WorkersDemand implements Request {
         ActorRef<Task.Response> sender;
@@ -47,7 +46,7 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * Is triggered when a worker has done its task.
+     * This message is sent when a worker has done its task.
      */
     public static final class WorkerDone implements Request {
         ActorRef<Worker.Request> sender;
@@ -60,7 +59,7 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * Is triggered when a task has been completed.
+     * This message is sent when a task has been completed.
      */
     public static final class TaskDone implements Request {
         ActorRef<Task.Response> sender;
@@ -82,10 +81,11 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * Create a new array with amount (argument) new workers.
+     * Create a new array with the length of the given number
+     * and consists of new workers.
      *
-     * @param amount
-     * @return
+     * @param amount is the requested amount of workers.
+     * @return the new array with new workers.
      */
     private ArrayList<ActorRef<Worker.Request>> createWorkers(int amount) {
         ArrayList<ActorRef<Worker.Request>> newWorkers = new ArrayList<>();
@@ -115,11 +115,12 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * Checks if enough workers are available and tells us how many empty slots are free.
-     * So new tasks can be queued in and if there are too many tasks these will be queued into a waiting queue.
+     * If there are enough workers available, assigns the task with new workers
+     * and tells us how many empty slots left are free,
+     * so that new tasks can be assigned.
+     * And if they ask for too many workers, these will be queued into a waiting queue.
      *
-     * @param request Nachricht
-     * @return
+     * @param request is the requesting message of a task.
      */
     private Behavior<Scheduler.Request> onWorkersDemand(WorkersDemand request) {
         getContext().getLog().info(
@@ -127,7 +128,7 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
         // if enough empty slots available
         if (request.amount <= emptySlots) {
             emptySlots -= request.amount;
-            // empty slots after the "reservation"
+            // show empty slots after the "reservation"
             if (emptySlots > 1) {
                 getContext().getLog().info("There are {} empty slots left.", emptySlots);
             } else {
@@ -150,11 +151,14 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     }
 
     /**
-     * When the task queue is not empty and the workers amount of first task is less or equal
-     * to the remaining empty slots, the task will be thrown out of the queue.
+     * When a worker has done its job, increase the amount of available slots
+     * and then check the queue task.
+     * When there are still task(s) in the queue, check the amount of requested workers
+     * of the first task in queue to see, if the current empty slots are enough for
+     * this task to be out of queue and be assigned with new workers.
+     * Otherwise, the queue remains the same until the next time it's getting checked.
      *
-     * @param response
-     * @return
+     * @param response is the message that a worker sends when their task is done.
      */
     private Behavior<Scheduler.Request> onWorkerDone(WorkerDone response) {
         getContext().getLog().info("{} has done their assignment in {} and is now terminated.", response.sender, response.ofWhich);
@@ -177,8 +181,7 @@ public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     /**
      * Shows a message when a task is done.
      *
-     * @param request Sent request when task done.
-     * @return
+     * @param request is sent when a task is done.
      */
     private Behavior<Scheduler.Request> onTaskDone(TaskDone request) {
         getContext().getLog().info("{} has been completed.", request.sender);

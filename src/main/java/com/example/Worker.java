@@ -28,7 +28,8 @@ public class Worker extends AbstractBehavior<Worker.Request> {
     }
 
     /**
-     *
+     * The message is sent, when the task has given this worker his task.
+     * The worker also does his task here.
      */
     public static final class TaskAssigned implements Request {
         private int calculatedNumber;
@@ -52,10 +53,9 @@ public class Worker extends AbstractBehavior<Worker.Request> {
     }
 
     /**
-     * After the calculation the worker sends it back to task.
+     * After the calculation the worker sends it back to task with the corresponding position.
      *
-     * @param response
-     * @return
+     * @param response is the task assignment from a task.
      */
     private Behavior<Worker.Request> onTaskAssigned(TaskAssigned response) {
         scheduler.tell(new Scheduler.WorkerDone(this.getContext().getSelf(), response.sender));
