@@ -45,21 +45,27 @@ public class Main extends AbstractBehavior<Main.StartMessage> {
         return newReceiveBuilder().onMessage(StartMessage.class, this::onStartMessage).build();
     }
 
+    public static int getRandom(int from, int to) {
+        if (from < to)
+            return from + new Random().nextInt(Math.abs(to - from));
+        return from - new Random().nextInt(Math.abs(to - from));
+    }
+
     /**
      * Spawns the scheduler and 10 tasks when start message is sent.
      * */
     private Behavior<StartMessage> onStartMessage(StartMessage command) throws InterruptedException {
         scheduler = getContext().spawn(Scheduler.create(), "Scheduler");
-        task1 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task1");
-        task2 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task2");
-        task3 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task3");
-        task4 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task4");
-        task5 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task5");
-        task6 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task6");
-        task7 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task7");
-        task8 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task8");
-        task9 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task9");
-        task10 = getContext().spawn(Task.create(scheduler, new Random().nextInt(4, 11)), "Task10");
+        task1 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task1");
+        task2 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task2");
+        task3 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task3");
+        task4 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task4");
+        task5 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task5");
+        task6 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task6");
+        task7 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task7");
+        task8 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task8");
+        task9 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task9");
+        task10 = getContext().spawn(Task.create(scheduler, getRandom(4, 11)), "Task10");
         return this;
     }
 }

@@ -10,6 +10,7 @@ import akka.actor.typed.javadsl.Receive;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 public class Scheduler extends AbstractBehavior<Scheduler.Request> {
     private int emptySlots = 10;
