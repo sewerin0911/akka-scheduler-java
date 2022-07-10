@@ -1,3 +1,7 @@
+// Sewerin Kuss     201346
+// Duc Ahn Le       230662
+// Janis Melon      209928
+
 package com.example;
 
 import akka.actor.typed.ActorRef;
@@ -11,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Task extends AbstractBehavior<Task.Response> {
-    private ArrayList<Integer> oldTaskList;
-    private ArrayList<Integer> taskList = new ArrayList<>();
+    private final ArrayList<Integer> oldTaskList;
+    private final ArrayList<Integer> taskList = new ArrayList<>();
     private ArrayList<ActorRef<Worker.Request>> assignedWorkers;
-    private ActorRef<Scheduler.Request> scheduler;
-    private int workersCount;
+    private final ActorRef<Scheduler.Request> scheduler;
+    private final int workersCount;
 
     public static Behavior<Task.Response> create(ActorRef<Scheduler.Request> scheduler, int cap) {
         return Behaviors.setup(context -> new Task(context, scheduler, cap));
@@ -32,7 +36,7 @@ public class Task extends AbstractBehavior<Task.Response> {
         oldTaskList = (ArrayList<Integer>) taskList.clone();
         workersCount = taskList.size();
         getContext().getLog().info("Task list of {} is: {}.",
-                this.getContext().getSelf(), this.taskList.toString());
+                this.getContext().getSelf(), this.taskList);
         scheduler.tell(new Scheduler.WorkersDemand(this.getContext().getSelf(), workersCount));
     }
 
@@ -116,7 +120,7 @@ public class Task extends AbstractBehavior<Task.Response> {
                     this.getContext().getSelf(), this.oldTaskList.toString());
             // print the new list
             getContext().getLog().info("New task list of {} is: {}.",
-                    this.getContext().getSelf(), this.taskList.toString());
+                    this.getContext().getSelf(), this.taskList);
             return Behaviors.stopped();
         } else {
             return this;
